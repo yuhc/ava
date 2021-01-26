@@ -1,0 +1,76 @@
+/*******************************************************************************
+ * Protocol for resource manager and spawn daemon's communication.
+ *******************************************************************************/
+
+syntax = "proto3";
+
+package ava_galvanic_proto;
+
+/*******************************************************************************
+ * Manager RPC service.
+ *******************************************************************************/
+
+/**
+ * When a spawn daemon starts, it sends this request to the manager to register its
+ * resources. In this example, the request includes the GPU memories and UUIDs.
+ */
+message DaemonRegisterRequest {
+  string daemon_address = 1; /* IP:port */
+  repeated uint64 free_memory = 2;
+  repeated string uuid = 3;
+}
+
+message DaemonRegisterReply {
+}
+
+/**
+ * When an API server exits, the daemon which spawned the API server sends this
+ * message to the manager. In this example, the message includes the API server's
+ * full address and the visible GPU UUIDs.
+ */
+message WorkerExitNotifyRequest {
+  string worker_address = 1; /* IP:port */
+  repeated string uuid = 2;
+}
+
+message WorkerExitNotifyReply {
+}
+
+service ManagerService {
+  /**
+   * Optional. The manager and spawn daemon can be combined as one process, or
+   * the spawn daemon can use other ways to register itself to the manager.
+   */
+  rpc RegisterDaemon(DaemonRegisterRequest) returns (DaemonRegisterReply);
+
+  /**
+   * Optional. It depends on the spawn daemon's implementation.
+   */
+  rpc NotifyWorkerExit(WorkerExitNotifyRequest) returns (WorkerExitNotifyReply);
+}
+
+/*******************************************************************************
+ * Daemon RPC service.
+ *******************************************************************************/
+
+/**
+ * Resource manager can request multiple API servers at one time.
+ * Usually the resource manager can request one API server on demand;
+ * or it can maintain an API server pool by itself and request multiple API
+ * servers to refill the pool.
+ */
+message WorkerSpawnRequest {
+  int32 count = 1;        /* Number of API servers to spawn */
+  string uuid = 2;        /* GPU UUID */
+}
+
+message WorkerSpawnReply {
+  /**
+   * IP:port. The list of spawned API servers' addresses.
+   */
+  repeated string worker_address = 1;
+}
+
+service DaemonService {
+  rpc SpawnWorker(WorkerSpawnRequest) returns (WorkerSpawnReply);
+}

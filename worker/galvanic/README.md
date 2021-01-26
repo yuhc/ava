@@ -5,6 +5,13 @@ Galvanic AvA manager shows an example where the AvA manager is integrated into
 the (Galvanic serverless) service, and only the spawn daemon is needed on the
 compute nodes.
 
+Dependencies
+============
+
+```Shell
+sudo apt install libprotobuf-dev protobuf-compiler libgrpc++-dev
+```
+
 Start Components
 ================
 
