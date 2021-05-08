@@ -113,6 +113,20 @@ endif()
 
 include(ExternalProject)
 
+ExternalProject_Add(thirdparty-glog
+  PREFIX third_party/thirdparty-glog
+  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party/glog"
+  BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/third_party/glog"
+  BUILD_ALWAYS ON
+  CMAKE_CACHE_ARGS
+        -DWITH_GFLAGS:BOOL=OFF
+        -DWITH_GTEST:BOOL=OFF
+        -DWITH_UNWIND:BOOL=ON
+        -DBUILD_TESTING:BOOL=OFF
+        -DBUILD_SHARED_LIBS:BOOL=OFF
+  INSTALL_COMMAND ""
+)
+
 ###### Build AvA manager ######
 
 ExternalProject_Add(ava-manager
@@ -159,6 +173,7 @@ ExternalProject_Add(ava-spec
         -DAVA_GEN_PYTORCH_SPEC:BOOL=${AVA_GEN_PYTORCH_SPEC}
         -DAVA_INSTALL_DIR:PATH=${AVA_INSTALL_DIR}
   BUILD_ALWAYS ON
+  DEPENDS thirdparty-glog
 )
 
 ###### tools ######

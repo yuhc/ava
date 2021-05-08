@@ -7,9 +7,12 @@ install(DIRECTORY DESTINATION ${CMAKE_INSTALL_PREFIX})
 # Common libraries
 find_package(Threads REQUIRED)
 find_package(Boost 1.65 REQUIRED COMPONENTS system program_options)
+set(Glog_DIR ${CMAKE_CURRENT_BINARY_DIR}/../third_party/glog)
+find_package(Glog 0.5.0 REQUIRED)
 
 set(manager_service_libraries Threads::Threads
-                              "${Boost_LIBRARIES}")
+                              "${Boost_LIBRARIES}"
+                              glog::glog)
 
 # Common files
 include_directories(

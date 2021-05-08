@@ -1,3 +1,4 @@
+#include <glog/logging.h>
 #include <sys/wait.h>
 
 #include <algorithm>
@@ -88,6 +89,8 @@ std::unique_ptr<LegacyManager> manager;
 }
 
 int main(int argc, const char *argv[]) {
+  google::InitGoogleLogging(argv[0]);
+
   auto arg_parser = ArgumentParser(argc, argv);
   arg_parser.init_and_parse_options();
   cfgWorkerPoolDisabled = arg_parser.disable_worker_pool;

@@ -36,6 +36,9 @@ pkg_check_modules(GLIB2 REQUIRED IMPORTED_TARGET glib-2.0)
 find_package(Boost REQUIRED COMPONENTS system)
 find_library(Config++ NAMES libconfig++ config++ REQUIRED)
 
+set(Glog_DIR ${{CMAKE_CURRENT_BINARY_DIR}}/../../third_party/glog)
+find_package(Glog 0.5.0 REQUIRED)
+
 ###### Compile ######
 
 include_directories(
@@ -72,6 +75,7 @@ target_link_libraries(worker
   ${{Boost_LIBRARIES}}
   Threads::Threads
   {api.libs}
+  glog::glog
 )
 
 add_library({api.soname} SHARED
@@ -101,9 +105,10 @@ target_link_libraries({api.soname}
   ${{Boost_LIBRARIES}}
   Threads::Threads
   ${{Config++}}
+  glog::glog
 )
 target_compile_options({api.soname}
-  PUBLIC -fvisibility=hidden
+  PUBLIC -fvisibility=hidden -Wl,--eh-frame-hdr
 )
 include(GNUInstallDirs)
 install(TARGETS worker

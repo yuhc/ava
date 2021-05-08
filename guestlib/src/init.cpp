@@ -1,3 +1,4 @@
+#include <glog/logging.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -21,6 +22,7 @@ static struct command_channel *channel_create() { return chan; }
 
 EXPORTED_WEAKLY void nw_init_guestlib(intptr_t api_id) {
   std::ios_base::Init();
+  google::InitGoogleLogging("guestlib");
 
   guestconfig::config = guestconfig::readGuestConfig();
   if (guestconfig::config == nullptr) exit(EXIT_FAILURE);
@@ -42,12 +44,12 @@ EXPORTED_WEAKLY void nw_init_guestlib(intptr_t api_id) {
   } else if (guestconfig::config->channel_ == "VSOCK") {
     chan = command_channel_socket_new();
   } else {
-    std::cerr << "Unsupported channel specified in " << guestconfig::kConfigFilePath
-              << ", expect channel = [\"TCP\" | \"SHM\" | \"VSOCK\"]" << std::endl;
+    LOG(ERROR) << "Unsupported channel specified in " << guestconfig::kConfigFilePath
+               << ", expect channel = [\"TCP\" | \"SHM\" | \"VSOCK\"]" << std::endl;
     exit(0);
   }
   if (!chan) {
-    std::cerr << "Failed to create command channel" << std::endl;
+    LOG(ERROR) << "Failed to create command channel" << std::endl;
     exit(1);
   }
   init_command_handler(channel_create);
